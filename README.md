@@ -1,6 +1,7 @@
-# AI Dataset Doctor
+# 🩺 AI Dataset Doctor
 
-A Streamlit application for automatic dataset quality analysis before machine learning.
+Analyze, diagnose, and improve your datasets before training machine learning models.
+
 
 ## Features
 
