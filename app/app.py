@@ -2,6 +2,7 @@ import streamlit as st
 from src.data_loader import load_dataset
 from src.overview import get_dataset_overview
 from src.missing_values import analyze_missing_values
+from src.duplicates import analyze_duplicates
 
 st.title('AI Dataset Doctor')
 
@@ -117,4 +118,29 @@ if uploaded_file is not None:
         st.dataframe(missing['column_summary'])
 
     st.divider()
+
+    st.subheader("📑 Duplicate Rows")
+    duplicates = analyze_duplicates(df)
+
+    col1, col2 = st.columns(2)
+
+    col1.metric(
+        label="Total Duplicates",
+        value = duplicates['total_duplicates']
+    )
+    col2.metric(
+        label='Duplicate %',
+        value= f" {duplicates['duplicate_percentage'] : .2f} %"
+    )
+
+
+    if duplicates['has_duplicates'] == False :
+        st.success("✅ No duplicate rows found in the dataset.")
+    else:
+        st.markdown("#### Sample Duplicate Rows")
+        st.dataframe(duplicates['duplicate_rows'].head(100))
+
+    st.caption(
+    f"Showing the first 100 duplicate rows out of {len(duplicates['duplicate_rows']):,}."
+)
     
