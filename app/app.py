@@ -3,6 +3,7 @@ from src.data_loader import load_dataset
 from src.overview import get_dataset_overview
 from src.missing_values import analyze_missing_values
 from src.duplicates import analyze_duplicates
+from src.statistical_summary import get_statistical_summary
 
 st.title('AI Dataset Doctor')
 
@@ -39,12 +40,23 @@ if uploaded_file is not None:
         value=memory_txt
     )
 
+
+
     st.divider()
+
+
 
     st.subheader('👀 Dataset Preview')
     st.dataframe(df.head(5))
 
+
+
+
+
     st.divider()
+
+
+
 
     st.subheader("📂 Data Type Summary")
     col1, col2 = st.columns(2)
@@ -91,8 +103,13 @@ if uploaded_file is not None:
             else:
                 st.caption("No datetime columns found.")
             
+
+
     
     st.divider()
+
+
+
     st.subheader("🧩 Missing Values")
     missing = analyze_missing_values(df)
 
@@ -117,7 +134,15 @@ if uploaded_file is not None:
         st.markdown("#### Missing Columns")
         st.dataframe(missing['column_summary'])
 
+
+
+
+
     st.divider()
+
+
+
+
 
     st.subheader("📑 Duplicate Rows")
     duplicates = analyze_duplicates(df)
@@ -142,5 +167,20 @@ if uploaded_file is not None:
 
     st.caption(
     f"Showing the first 100 duplicate rows out of {len(duplicates['duplicate_rows']):,}."
-)
+    )
+
+
+    st.divider()
+
+
+    st.subheader("📈 Statistical Summary")
+    summary = get_statistical_summary(df)
+
+
+    if summary["statistical_summary"].empty:
+        st.info("ℹ️ No numeric columns are available, so no statistical summary can be generated.")
+    else:
+       st.dataframe(summary["statistical_summary"].T.round(2))
+
+
     
