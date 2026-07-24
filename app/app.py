@@ -4,6 +4,7 @@ from src.overview import get_dataset_overview
 from src.missing_values import analyze_missing_values
 from src.duplicates import analyze_duplicates
 from src.statistical_summary import get_statistical_summary
+from src.health_check import analyze_dataset_check
 
 st.title('AI Dataset Doctor')
 
@@ -183,4 +184,39 @@ if uploaded_file is not None:
        st.dataframe(summary["statistical_summary"].T.round(2))
 
 
-    
+
+
+
+    st.divider()
+
+    st.subheader("🩺 Dataset Health Check")
+    st.caption("Evaluate the statistical health of your dataset by analyzing feature distributions, variability, and category balance.")
+    health = analyze_dataset_check(df)
+
+    st.subheader("📐 Distribution Analysis")
+    if health['distribution_table'] is None :
+        st.info("No numerical columns found.")
+    else:
+        st.dataframe(health['distribution_table'])
+    st.info("This table shows the distribution shape of each numerical feature.")
+
+    st.divider()
+
+    st.subheader("📉 Variability Analysis")
+    if health["variability_table"] is None:
+        st.info("No numerical columns found.")
+    else:
+        st.dataframe(health['variability_table'])
+    st.info("The coefficient of variation (CV) measures the relative variability of each numerical feature.")
+
+    st.divider()
+
+    st.subheader("⚖️ Balance Analysis")
+    if health["balance_table"] is None:
+        st.info("No categorical columns found.")
+    else:
+        st.dataframe(health['balance_table'])
+    st.info("his analysis evaluates the distribution of categorical features by identifying class imbalance and detecting high-cardinality columns.")
+
+    st.divider()
+
