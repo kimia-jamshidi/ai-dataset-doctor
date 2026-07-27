@@ -5,6 +5,7 @@ from src.missing_values import analyze_missing_values
 from src.duplicates import analyze_duplicates
 from src.statistical_summary import get_statistical_summary
 from src.health_check import analyze_dataset_check
+from src.outlier_detection import analyze_outliers
 
 st.title('AI Dataset Doctor')
 
@@ -149,7 +150,6 @@ if uploaded_file is not None:
     duplicates = analyze_duplicates(df)
 
     col1, col2 = st.columns(2)
-
     col1.metric(
         label="Total Duplicates",
         value = duplicates['total_duplicates']
@@ -177,7 +177,6 @@ if uploaded_file is not None:
     st.subheader("📈 Statistical Summary")
     summary = get_statistical_summary(df)
 
-
     if summary["statistical_summary"].empty:
         st.info("ℹ️ No numeric columns are available, so no statistical summary can be generated.")
     else:
@@ -192,6 +191,7 @@ if uploaded_file is not None:
     st.subheader("🩺 Dataset Health Check")
     st.caption("Evaluate the statistical health of your dataset by analyzing feature distributions, variability, and category balance.")
     health = analyze_dataset_check(df)
+    distribution_table = health['distribution_table']
 
     st.subheader("📐 Distribution Analysis")
     if health['distribution_table'] is None :
@@ -216,7 +216,34 @@ if uploaded_file is not None:
         st.info("No categorical columns found.")
     else:
         st.dataframe(health['balance_table'])
-    st.info("his analysis evaluates the distribution of categorical features by identifying class imbalance and detecting high-cardinality columns.")
+    st.info("This analysis evaluates the distribution of categorical features by identifying class imbalance and detecting high-cardinality columns.")
+
+
 
     st.divider()
 
+
+    st.subheader("🚨 Outlier Detection")
+    outlier = analyze_outliers(df, distribution_table)
+    outlier_table = outlier['outlier_table']
+
+
+    total_outliers = outlier_table["Outliers"].sum()
+    columns_with_outliers = (outlier_table["Outliers"] > 0).sum()
+
+    col1, col2 = st.columns(2)
+    col1.metric(
+        label="Total Outliers",
+        value=total_outliers
+    )
+    col2.metric(
+        label="Columns with Outliers",
+        value=columns_with_outliers
+    )
+
+    if outlier_table.empty:
+        st.info("No numerical features available for outlier detection.")
+    else:
+        with st.expander("📋 View Outlier Details"):
+            st.dataframe(outlier_table, hide_index=True)
+            st.info("This table summarizes outlier detection results for each numerical feature.")
