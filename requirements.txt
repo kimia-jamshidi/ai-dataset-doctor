@@ -1,0 +1,9 @@
+Python 3.10+
+
+Streamlit
+
+Pandas
+
+Google GenAI SDK
+
+python-dotenv

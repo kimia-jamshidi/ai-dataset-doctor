@@ -72,3 +72,7 @@ doctor_env/
 # Logs
 # ==========================
 *.log
+
+
+
+test_gemini.py

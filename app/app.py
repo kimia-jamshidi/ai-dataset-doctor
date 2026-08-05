@@ -6,6 +6,12 @@ from src.duplicates import analyze_duplicates
 from src.statistical_summary import get_statistical_summary
 from src.health_check import analyze_dataset_check
 from src.outlier_detection import analyze_outliers
+from src.ai_insights import generate_ai_insights
+
+import traceback
+
+from dotenv import load_dotenv
+load_dotenv()
 
 st.title('AI Dataset Doctor')
 
@@ -247,3 +253,40 @@ if uploaded_file is not None:
         with st.expander("📋 View Outlier Details"):
             st.dataframe(outlier_table, hide_index=True)
             st.info("This table summarizes outlier detection results for each numerical feature.")
+
+
+
+
+    st.divider()
+
+    st.subheader("🤖 AI Insights")
+    st.caption("AI-generated dataset quality assessment and recommendations.")
+
+    try:
+        ai_result = generate_ai_insights(overview, missing, duplicates,
+                        health, outlier)
+
+        with st.expander("⚠️ Warnings", expanded=True):
+            if ai_result['warnings']:
+                for warning in ai_result['warnings']:
+                    st.write(f"• {warning}")
+            else:
+                st.success("No warnings detected.")
+
+        with st.expander("💡 Actionable Recommendations", expanded=True):
+            if ai_result['recommendations']:
+                for recommendation in ai_result['recommendations']:
+                    st.write(f"• {recommendation}")
+            else:
+                st.success("No recommendations available.")
+
+
+    except Exception as e:
+        st.error("Unable to generate AI insights at the moment.")
+        st.error("⚠️ Note:'\n'AI Insights currently uses the Google Gemini API. In some regions, access may require a VPN. If AI analysis is unavailable, the rest of the application will continue to work normally.")
+        st.caption(f"Details: {e}")
+        st.code(traceback.format_exc())
+
+
+    
+    
